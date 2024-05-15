@@ -33,7 +33,7 @@ namespace LoanManagement.Repository
                 Console.WriteLine($"Interest Rate: {loan.InterestRate}");
                 Console.WriteLine($"Loan Term: {loan.LoanTerm}");
                 Console.WriteLine($"Loan Type: {loan.LoanType}");
-                
+
                 Console.WriteLine("Do you want to apply for this loan? (Yes/No)");
 
                 string userInput = Console.ReadLine();
@@ -68,50 +68,208 @@ namespace LoanManagement.Repository
                 sql.Close();
             }
         }
-        public Loan GetLoanById(int loanId)
+        public List<Loan> GetLoanById(int loanId)
         {
-            Loan loan = null;
+
+            try
+            {
+                List<Loan> loans = new List<Loan>();
+                cmd.Connection = sql;
+                cmd.CommandText = "SELECT * FROM Loan where loanId=@loanId";
+                cmd.Parameters.AddWithValue("@loanId", loanId);
+                sql.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Loan loan = new Loan
+                    {
+                        LoanId = (int)reader["LoanId"],
+                        PrincipalAmount = (double)reader["PrincipalAmount"],
+                        InterestRate = (double)reader["InterestRate"],
+                        LoanTerm = (int)reader["LoanTerm"],
+                        LoanType = reader["LoanType"].ToString(),
+                        LoanStatus = reader["LoanStatus"].ToString()
+                    };
+                    loans.Add(loan);
+                }
+                sql.Close();
+
+                return loans;
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine("Error in retrieving loan:" + ex.Message);
+                throw;
+            }
+            finally
+            {
+                sql.Close();
+            }   }
+        public double CalculateInterest(int loanId)
+        {
+            double interestAmount = 0;
 
             try
             {
                 sql.Open();
-                cmd.CommandText = "SELECT * FROM Loans WHERE LoanId = @LoanId";
-                cmd.Parameters.AddWithValue("@LoanId", loanId);
+                    cmd.Connection = sql;
+                    cmd.CommandText = "SELECT PrincipalAmount, InterestRate, LoanTerm FROM Loan WHERE LoanID = @LoanId";
+                    cmd.Parameters.AddWithValue("@LoanId", loanId);
 
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        loan = new Loan
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    
+                        if (reader.Read())
                         {
-                            LoanId = (int)reader["LoanId"],
-                            // Check if the "Customer" column exists before accessing its value
-                            Customer = reader.IsDBNull(reader.GetOrdinal("Customer")) ? null : reader["Customer"].ToString(),
-                            PrincipalAmount = (double)reader["PrincipalAmount"],
-                            InterestRate = (double)reader["InterestRate"],
-                            LoanTerm = (int)reader["LoanTerm"],
-                            LoanStatus = reader["LoanStatus"].ToString(),
-                            LoanType = reader["LoanType"].ToString()
-                        };
-                    }
+                            double principalAmount = reader.GetDouble(0);
+                            double interestRate = reader.GetDouble(1);
+                            int loanTerm = reader.GetInt32(2);
+
+                            
+                            interestAmount = (principalAmount * interestRate * loanTerm) / 12;
+                        }
+                    
                 }
-            }
-            catch (ApplicationException ex) { 
             
-                Console.WriteLine("Error retrieving loan details: " + ex.Message);
+            catch (IOException ex)
+            {
+              
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
+            finally
+            {
+                
+                sql.Close();
+            }
+
+            return interestAmount;
+        }
+
+        public List<Loan> GetAllLoan()
+        {
+            try
+            {
+                List<Loan> loans = new List<Loan>();
+                 sql.Open();
+                   cmd.Connection = sql;
+                cmd.CommandText = "SELECT * FROM Loan ";
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            Loan loan = new Loan
+                            {
+                                LoanId = reader.GetInt32(reader.GetOrdinal("LoanId")),
+                                PrincipalAmount = (float)reader.GetDouble(reader.GetOrdinal("PrincipalAmount")),
+                                InterestRate = (float)reader.GetDouble(reader.GetOrdinal("InterestRate")),
+                                LoanTerm = reader.GetInt32(reader.GetOrdinal("LoanTerm")),
+                                LoanType = reader.GetString(reader.GetOrdinal("LoanType")),
+                                LoanStatus = reader.GetString(reader.GetOrdinal("LoanStatus"))
+                            };
+                            loans.Add(loan);
+                        }
+                return loans;
+
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Error in retrieving loan:" + ex.Message);
+                throw;
             }
             finally
             {
                 sql.Close();
             }
+            
+        }
+        public void LoanStatus(int loanId)
+        {
+            try
+            {
+                
+                int creditScore = GetCreditScore(loanId);
 
-            return loan;
+                
+               
+               string loanStatus = (creditScore > 650) ? "Approved" : "Rejected";
+
+                UpdateLoanStatus(loanId, loanStatus);
+
+                Console.WriteLine($"Loan with ID {loanId} is {loanStatus}");
+            }
+            catch (IOException ex)
+            {
+                
+                Console.WriteLine("An error occurred: " + ex.Message);
+            }
         }
 
+        public int GetCreditScore(int loanId)
+        {
+            int creditScore = 0;
 
+            try
+            {
+                sql.Open();
+               cmd.Connection = sql;
+                 cmd.CommandText = "SELECT CreditScore FROM Customer WHERE CustomerId = (SELECT CustomerId FROM Loan WHERE LoanId = @LoanId)";
+                    cmd.Parameters.AddWithValue("@LoanId", loanId);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        creditScore = Convert.ToInt32(result);
+                    }
+                }
+            
+            catch (IOException ex)
+            {
+               
+                Console.WriteLine("An error occurred while retrieving credit score: " + ex.Message);
+            }
+            finally
+            {
+               
+                sql.Close();
+            }
 
+            return creditScore;
+        }
 
+        public void UpdateLoanStatus(int loanId, string loanStatus)
+        {
+            try
+            {
+                sql.Open();
+                cmd.Connection = sql;
+                cmd.CommandText = "UPDATE Loan SET LoanStatus = @LoanStatus WHERE LoanId = @LoanId";
+                
+                    cmd.Parameters.AddWithValue("@LoanStatus", loanStatus);
+                    cmd.Parameters.AddWithValue("@LoanId", loanId);
+                    cmd.ExecuteNonQuery();
+                
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine("An error occurred while updating loan status: " + ex.Message);
+            }
+            finally
+            {
+                
+                sql.Close();
+            }
+        }
 
-
+        public void UpdateLoan(Loan loan)
+        {
+            throw new NotImplementedException();
+        }
     }
+
+
 }
+
+    
+
+
+
+
+

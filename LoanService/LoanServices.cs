@@ -34,7 +34,7 @@ namespace LoanManagement.LoanService
                 {
                     PrincipalAmount = principalAmount,
                     InterestRate = interestRate,
-                    LoanType =loanType,
+                    LoanType = loanType,
                     LoanTerm = loanTerm
                 };
                 loanRepo.ApplyLoan(loan);
@@ -46,39 +46,77 @@ namespace LoanManagement.LoanService
                 Console.WriteLine("Error: " + ex.Message);
             }
         }
-        public void GetLoanById()
+        public  void GetLoanById()
         {
             try
             {
-                Console.WriteLine("Enter loan ID:");
+                Console.WriteLine("Enter the Loan-ID:");
                 int loanId = Convert.ToInt32(Console.ReadLine());
 
-                Loan loan = loanRepo.GetLoanById(loanId);
+                List<Loan> loans = loanRepo.GetLoanById(loanId);
 
-                if (loan != null)
+                if (loans != null && loans.Any())
                 {
-                    Console.WriteLine("Loan details:");
-                    Console.WriteLine($"Loan ID: {loan.LoanId}");
-                    Console.WriteLine($"Customer: {loan.Customer}");
-                    Console.WriteLine($"Principal Amount: {loan.PrincipalAmount}");
-                    Console.WriteLine($"Interest Rate: {loan.InterestRate}");
-                    Console.WriteLine($"Loan Type: {loan.LoanType}");
-                    Console.WriteLine($"Loan Term: {loan.LoanTerm}");
-                    Console.WriteLine($"Loan Status: {loan.LoanStatus}");
+                    Console.WriteLine("Loans for User using UserID " + loanId);
+                    foreach (var loan in loans)
+                    {
+                        Console.WriteLine($"Loan ID: {loan.LoanId}, Principal Amount: {loan.PrincipalAmount}, Interest Rate: {loan.InterestRate}, Loan Term: {loan.LoanTerm}");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Loan not found.");
+                    Console.WriteLine("No loans found for UserID " + loanId);
                 }
             }
-            catch (ApplicationException ex)
+            catch (IOException ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
         }
+        public void CalculateInterest()
+        {
+            Console.Write("Enter the loan id:");
+            int loanId = int.Parse(Console.ReadLine());
+            double calculatedInterest = loanRepo.CalculateInterest(loanId);
+            Console.WriteLine($"The sum of Interest is{calculatedInterest}");
+
+        }
+
+        public void GetAllLoan()
+        {
+            List<Loan> loans = loanRepo.GetAllLoan();
+
+            foreach (var loan in loans)
+            {
+                Console.WriteLine($"Loan Id: {loan.LoanId}, Customer Id: {loan.CustomerId}, Loan Type: {loan.LoanType}, Principal Amount: {loan.PrincipalAmount}, Loan Status: {loan.LoanStatus}");
+            }
+        }
+
+        public void LoanStatus()
+        {
+            try
+            {
+                Console.Write("Enter the loan ID: ");
+                int loanId = int.Parse(Console.ReadLine());
+
+                
+                LoanServices.LoanStatus(loanId);
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid loan ID. Please enter a valid numeric loan ID.");
+            }
+        }
+
+        private static void LoanStatus(int loanId)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 
 
 
     }
-}
+
+

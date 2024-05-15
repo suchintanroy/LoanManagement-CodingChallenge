@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace LoanManagement.Models
 
             public HomeLoan() { }
 
-            public HomeLoan(int loanId, Customer customer, double principalAmount, double interestRate, int loanTerm, string loanStatus, string propertyAddress, int propertyValue)
+            public HomeLoan(int loanId, int customer, double principalAmount, double interestRate, int loanTerm, string loanStatus, string propertyAddress, int propertyValue)
                 : base(loanId, customer, principalAmount, interestRate, loanTerm, "HomeLoan", loanStatus)
             {
                 PropertyAddress = propertyAddress;
@@ -26,4 +26,4 @@ namespace LoanManagement.Models
                 return base.ToString() + $", PropertyAddress: {PropertyAddress}, PropertyValue: {PropertyValue}";
             }
         }
-    }*/
+    }

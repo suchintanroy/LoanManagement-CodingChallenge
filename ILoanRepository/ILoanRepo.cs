@@ -9,14 +9,17 @@ namespace LoanManagement.ILoanRepository
 {
     internal interface ILoanRepo
     {
-      public  bool ApplyLoan(Loan loan);
-        //double CalculateInterest(int loanId);
+        public bool ApplyLoan(Loan loan);
+     public  double CalculateInterest(int loanId);
         //double CalculateInterest(int loanId, double principalAmount, double interestRate, int loanTerm);
         //void LoanStatus(int loanId);
         //double CalculateEMI(int loanId);
         //double CalculateEMI(int loanId, double principalAmount, double interestRate, int loanTerm);
         //void LoanRepayment(int loanId, double amount);
-        //public List<Loan> GetAllLoan();
-        Loan GetLoanById(int loanId);
+        public void LoanStatus(int loanId);
+      public   List  <Loan> GetLoanById(int loanId);
+     public void UpdateLoan(Loan loan);
+     public int GetCreditScore(int loanId);
+      public   List <Loan> GetAllLoan();
     }
 }

@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +13,8 @@ namespace LoanManagement.Models
 
         public CarLoan() { }
 
-        public CarLoan(int loanId, Customer.ToString(), double principalAmount, double interestRate, int loanTerm, string loanStatus, string carModel, int carValue)
-            : base(loanId, customer, principalAmount, interestRate, loanTerm, "CarLoan", loanStatus)
+        public CarLoan(int loanId, Customer customer,double principalAmount, double interestRate, int loanTerm, string loanStatus, string carModel, int carValue)
+            : base(loanId,principalAmount, interestRate, loanTerm, "CarLoan", loanStatus)
         {
             CarModel = carModel;
             CarValue = carValue;
@@ -25,4 +25,4 @@ namespace LoanManagement.Models
             return base.ToString() + $", CarModel: {CarModel}, CarValue: {CarValue}";
         }
     }
-}*/
+}

@@ -11,7 +11,7 @@ namespace LoanManagement
             ILoanServices loanServices = new LoanServices();
 
             // Pass loanServices to the LoanMenu constructor
-            LoanMenu loanMenu = new LoanMenu(loanServices);
+            LoanMenu loanMenu = new LoanMenu();
 
             loanMenu.DisplayMenu();
         }

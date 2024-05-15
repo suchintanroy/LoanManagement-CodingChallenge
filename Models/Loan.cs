@@ -8,17 +8,20 @@ namespace LoanManagement.Models
 {
      class Loan
     {
+        private string v;
+
         public int LoanId { get; set; }
-        public string Customer { get; set; }
+        public int Customer { get; set; }
         public double PrincipalAmount { get; set; }
         public double InterestRate { get; set; }
         public int LoanTerm { get; set; }
         public string LoanType { get; set; }
         public string LoanStatus { get; set; }
+        public object CustomerId { get; internal set; }
 
         public Loan() { }
 
-        public Loan(int loanId, string customer, double principalAmount, double interestRate, int loanTerm, string loanType, string loanStatus)
+        public Loan(int loanId, int customer, double principalAmount, double interestRate, int loanTerm, string loanType, string loanStatus)
         {
             LoanId = loanId;
             Customer = customer;
@@ -26,6 +29,16 @@ namespace LoanManagement.Models
             InterestRate = interestRate;
             LoanTerm = loanTerm;
             LoanType = loanType;
+            LoanStatus = loanStatus;
+        }
+
+        public Loan(int loanId, double principalAmount, double interestRate, int loanTerm, string v, string loanStatus)
+        {
+            LoanId = loanId;
+            PrincipalAmount = principalAmount;
+            InterestRate = interestRate;
+            LoanTerm = loanTerm;
+            this.v = v;
             LoanStatus = loanStatus;
         }
 

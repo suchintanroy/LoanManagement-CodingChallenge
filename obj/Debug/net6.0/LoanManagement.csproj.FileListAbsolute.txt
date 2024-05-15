@@ -31,3 +31,4 @@ C:\Users\SUCHINTAN ROY\source\repos\LoanManagement\obj\Debug\net6.0\refint\LoanM
 C:\Users\SUCHINTAN ROY\source\repos\LoanManagement\obj\Debug\net6.0\LoanManagement.pdb
 C:\Users\SUCHINTAN ROY\source\repos\LoanManagement\obj\Debug\net6.0\LoanManagement.genruntimeconfig.cache
 C:\Users\SUCHINTAN ROY\source\repos\LoanManagement\obj\Debug\net6.0\ref\LoanManagement.dll
+C:\Users\SUCHINTAN ROY\source\repos\LoanManagement\obj\Debug\net6.0\LoanManagement.sourcelink.json
